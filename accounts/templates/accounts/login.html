@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Login | SportMaster{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+  <h2 class="text-2xl font-semibold mb-6 text-center text-gray-900 dark:text-gray-100">Login</h2>
+
+  <form method="post" class="space-y-4">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    
+    {% for field in form %}
+      <div>
+        <label class="block font-medium mb-1 text-gray-800 dark:text-gray-200">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <p class="text-red-600 text-sm mt-1">{{ field.errors|striptags }}</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    <button type="submit"
+            class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+      Einloggen
+    </button>
+  </form>
+
+  <p class="text-center mt-4 text-gray-700 dark:text-gray-300">
+    Noch kein Konto? 
+    <a href="{% url 'register' %}" class="text-blue-600 hover:underline">Jetzt registrieren</a>
+  </p>
+</div>
+{% endblock %}

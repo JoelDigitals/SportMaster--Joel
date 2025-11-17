@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Strafenkatalog — {{ team.name }}{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="flex justify-between items-center">
+    <h1 class="text-xl font-bold">Strafenkatalog — {{ team.name }}</h1>
+    {% if user == team.cashier %}
+      <a href="{% url 'penalty_create' team.slug %}" class="px-3 py-1 bg-red-600 text-white rounded">Katalog-Eintrag</a>
+    {% endif %}
+  </div>
+
+  <div class="mt-4">
+    <h3 class="font-semibold">Katalog</h3>
+    <ul class="mt-2">
+      {% for p in penalties %}
+        <li class="p-3 border rounded flex justify-between items-center">
+          <div>
+            <strong>{{ p.title }}</strong>
+            <div class="muted text-sm">{{ p.amount }} € — {{ p.description }}</div>
+          </div>
+          <div class="text-sm">
+            {% if user == team.cashier %}
+              <a href="{% url 'penalty_assign' team.slug %}" class="px-2 py-1 border rounded">Zuweisen</a>
+            {% endif %}
+          </div>
+        </li>
+      {% empty %}
+        <li class="muted">Keine Strafen im Katalog.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="mt-6">
+    <h3 class="font-semibold">Vergebene Strafen</h3>
+    <ul class="mt-2">
+      {% for pe in assigned_penalties %}
+        <li class="p-3 border rounded flex justify-between items-center">
+          <div>
+            <div><strong>{{ pe.user.get_full_name|default:pe.user.username }}</strong> — {{ pe.penalty.title }}</div>
+            <div class="muted text-sm">Datum: {{ pe.assigned_at|date:"d.m.Y" }} — Grund: {{ pe.note }}</div>
+          </div>
+          <div class="text-sm">
+            {% if pe.paid %}
+              <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded">Bezahlt</span>
+            {% else %}
+              <span class="px-2 py-0.5 bg-red-100 text-red-800 rounded">Offen</span>
+              {% if user == team.cashier %}
+                <form method="post" action="{% url 'penalty_mark_paid' team.slug pe.pk %}" class="inline">
+                  {% csrf_token %}
+                  <button class="ml-2 px-2 py-1 border rounded">Als bezahlt markieren</button>
+                </form>
+              {% endif %}
+            {% endif %}
+          </div>
+        </li>
+      {% empty %}
+        <li class="muted">Keine vergebene Strafen.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

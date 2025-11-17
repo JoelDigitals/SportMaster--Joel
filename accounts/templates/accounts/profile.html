@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Profil | SportMaster{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-8 px-4">
+
+    <!-- Card -->
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
+                rounded-lg shadow p-6">
+
+        <!-- Heading -->
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">
+            Mein Profil
+        </h1>
+
+        <!-- User Info -->
+        <div class="space-y-4">
+
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Benutzername</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    {{ user.username }}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">E-Mail</p>
+                <p class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    {{ user.email }}
+                </p>
+            </div>
+
+            <div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Rolle</p>
+                <span class="inline-block mt-1 px-3 py-1 rounded-full text-sm font-semibold
+                             bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                    {{ user.role }}
+                </span>
+            </div>
+
+        </div>
+
+        <!-- Teams Section -->
+        <div class="mt-8">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                Meine Teams
+            </h2>
+
+            {% if user.teams.all %}
+                <div class="space-y-2">
+                    {% for team in user.teams.all %}
+                        <a href="{% url 'team_detail' team.slug %}"
+                           class="block px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
+                                  bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 
+                                  text-gray-900 dark:text-gray-100 transition">
+                            <span class="font-medium">{{ team.name }}</span>
+                            <span class="text-sm text-gray-600 dark:text-gray-400">({{ team.club.name }})</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-600 dark:text-gray-400">Du bist noch in keinem Team.</p>
+            {% endif %}
+        </div>
+
+        <!-- Buttons -->
+        <div class="mt-8 flex flex-wrap gap-3">
+
+            <a href="{% url 'logout' %}"
+               class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

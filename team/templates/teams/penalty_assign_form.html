@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Strafe zuweisen — {{ team.name }}{% endblock %}
+
+{% block content %}
+<div class="card max-w-xl mx-auto">
+    <h1 class="text-xl font-bold mb-4">Strafe zuweisen – {{ team.name }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Strafart -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Strafe</label>
+            <select name="penalty_id" class="w-full border p-2 rounded">
+                {% for p in penalties %}
+                    <option value="{{ p.id }}">{{ p.title }} ({{ p.amount }} €)</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Spieler -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Spieler</label>
+            <select name="user_id" class="w-full border p-2 rounded">
+                {% for m in members %}
+                    <option value="{{ m.id }}">{{ m.get_full_name|default:m.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Kommentar -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Kommentar</label>
+            <textarea name="note" rows="3" class="w-full border p-2 rounded"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+            <a href="{% url 'penalties_list' team.slug %}" class="px-3 py-1 border rounded">
+                Abbrechen
+            </a>
+
+            <button type="submit"
+                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Speichern
+            </button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

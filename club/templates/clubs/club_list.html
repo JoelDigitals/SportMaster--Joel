@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-4">Clubs</h1>
+
+<a class="btn btn-success mb-3" href="{% url 'club_create' %}">➕ Club erstellen</a>
+
+<ul class="list-group">
+    {% for club in clubs %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{% url 'club_detail' club.slug %}">{{ club.name }}</a>
+            <small>{{ club.federation }}</small>
+        </li>
+    {% empty %}
+        <p>Keine Clubs vorhanden.</p>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>{{ title }}</h1>
+
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-success mt-3">Speichern</button>
+    <a class="btn btn-secondary mt-3" href="{% url 'club_list' %}">Abbrechen</a>
+</form>
+
+{% endblock %}

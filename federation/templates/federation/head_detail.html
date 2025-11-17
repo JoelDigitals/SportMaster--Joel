@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ head.name }}</h1>
+
+<p><strong>Parent:</strong> {{ head.parent }}</p>
+<p><strong>Land:</strong> {{ head.country }}</p>
+<p><strong>Email:</strong> {{ head.contact_email }}</p>
+<p><strong>Adresse:</strong> {{ head.adress }}</p>
+<p><strong>Telefon:</strong> {{ head.phone_number }}</p>
+<p><strong>Website:</strong> <a href="{{ head.website }}" target="_blank">{{ head.website }}</a></p>
+<p><strong>Weitere Infos:</strong> {{ head.additional_info }}</p>
+
+<a class="btn btn-primary" href="{% url 'head_edit' head.slug %}">✏️ Bearbeiten</a>
+<a class="btn btn-secondary" href="{% url 'head_list' %}">⬅️ Zurück</a>
+{% endblock %}

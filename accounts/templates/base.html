@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'de' }}" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SportMaster{% endblock %}</title>
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: "class" }
+    </script>
+
+    <link rel="icon" href="{% static 'images/logo.png' %}">
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-200 min-h-screen flex flex-col transition-colors">
+
+<!-- -----------------------------------------------------------------------
+   NAVIGATION
+----------------------------------------------------------------------- -->
+<nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+  <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+
+    <!-- Logo -->
+    <a href="{% url 'home' %}" class="flex items-center gap-2 text-xl font-bold text-blue-600 dark:text-blue-400">
+        <img src="{% static 'images/logo.png' %}" class="h-8 w-auto">
+        SportMaster
+    </a>
+
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex items-center gap-6">
+
+        <a href="{% url 'home' %}" class="hover:text-blue-500 dark:hover:text-blue-300 transition">Home</a>
+
+        {% if user.is_authenticated %}
+            <a href="{% url 'team_list' %}" class="hover:text-blue-500 dark:hover:text-blue-300 transition">Meine Teams</a>
+        {% endif %}
+
+        <!-- LANGUAGE SWITCH -->
+        <select id="langSelector"
+            class="bg-gray-200 dark:bg-gray-700 text-sm px-2 py-1 rounded focus:outline-none">
+            <option value="de" {% if LANGUAGE_CODE == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+            <option value="en" {% if LANGUAGE_CODE == 'en' %}selected{% endif %}>🇬🇧 English</option>
+        </select>
+
+        <!-- THEME TOGGLE (dynamic icon!!) -->
+        <button id="themeToggle"
+            class="px-3 py-2 rounded bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 text-xl transition">
+        </button>
+
+        {% if user.is_authenticated %}
+            <span class="text-gray-700 dark:text-gray-300">Hallo, {{ user.username }}</span>
+            <a href="{% url 'profile' %}" class="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Profil</a>
+            <a href="{% url 'logout' %}" class="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 transition">Logout</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700 transition">Login</a>
+            <a href="{% url 'register' %}" class="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 transition">Registrieren</a>
+        {% endif %}
+    </div>
+
+    <!-- Mobile Button -->
+    <button id="menuBtn"
+        class="md:hidden text-3xl text-gray-700 dark:text-gray-300">
+        ☰
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobileMenu"
+       class="hidden md:hidden bg-white dark:bg-gray-800 px-4 pb-4 space-y-3 border-t dark:border-gray-700">
+
+      <a href="{% url 'home' %}" class="block">Home</a>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'team_list' %}" class="block">Meine Teams</a>
+      {% endif %}
+
+      <select id="langSelectorMobile"
+          class="w-full bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="en">🇬🇧 English</option>
+      </select>
+
+      <button id="themeToggleMobile"
+              class="w-full px-3 py-2 rounded bg-gray-300 dark:bg-gray-700 text-xl">
+      </button>
+
+      {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="block bg-blue-600 text-white px-3 py-2 rounded text-center">Profil</a>
+        <a href="{% url 'logout' %}" class="block bg-red-600 text-white px-3 py-2 rounded text-center">Logout</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="block bg-blue-600 text-white px-3 py-2 rounded text-center">Login</a>
+        <a href="{% url 'register' %}" class="block bg-green-600 text-white px-3 py-2 rounded text-center">Registrieren</a>
+      {% endif %}
+  </div>
+</nav>
+
+<!-- -----------------------------------------------------------------------
+   THEME TOGGLE SCRIPT (SONNE / MOND LOGIK)
+----------------------------------------------------------------------- -->
+<script>
+function applyThemeIcon() {
+    const isDark = document.documentElement.classList.contains("dark");
+    document.getElementById("themeToggle").innerHTML = isDark ? "🌞" : "🌙";
+    document.getElementById("themeToggleMobile").innerHTML = isDark ? "🌞" : "🌙";
+}
+
+function toggleTheme() {
+    document.documentElement.classList.toggle("dark");
+    const mode = document.documentElement.classList.contains("dark") ? "dark" : "light";
+    localStorage.setItem("theme", mode);
+    applyThemeIcon();
+}
+
+// Load theme on startup
+if (localStorage.theme === "dark" ||
+   (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+    document.documentElement.classList.add("dark");
+}
+applyThemeIcon();
+
+// Event listeners
+document.getElementById("themeToggle").onclick = toggleTheme;
+document.getElementById("themeToggleMobile").onclick = toggleTheme;
+
+// Mobile menu
+document.getElementById("menuBtn").onclick = () =>
+  document.getElementById("mobileMenu").classList.toggle("hidden");
+</script>
+
+<!-- LANGUAGE SWITCH -->
+<script>
+document.getElementById("langSelector").onchange = (ev) =>
+    window.location.search = "?lang=" + ev.target.value;
+
+document.getElementById("langSelectorMobile").onchange = (ev) =>
+    window.location.search = "?lang=" + ev.target.value;
+</script>
+
+<!-- -----------------------------------------------------------------------
+   COOKIE BANNER — ERWEITERT & EU-KONFORM
+----------------------------------------------------------------------- -->
+<div id="cookieBanner"
+    class="fixed bottom-4 right-4 w-full max-w-md bg-white dark:bg-gray-800 shadow-lg border border-gray-300 dark:border-gray-700 p-5 rounded-lg space-y-4 hidden">
+
+    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+        {% if LANGUAGE_CODE == "de" %} Cookie-Einstellungen {% else %} Cookie Settings {% endif %}
+    </h3>
+
+    <p class="text-sm text-gray-600 dark:text-gray-300">
+        {% if LANGUAGE_CODE == 'de' %}
+            Wir verwenden Cookies, um unsere Dienste zu verbessern.
+        {% else %}
+            We use cookies to improve our services.
+        {% endif %}
+    </p>
+
+    <div class="space-y-2 text-sm">
+        <label class="flex items-center gap-2">
+            <input type="checkbox" checked disabled>
+            <span>Technisch notwendig</span>
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" id="cookieStats">
+            <span>Statistik</span>
+        </label>
+
+        <label class="flex items-center gap-2">
+            <input type="checkbox" id="cookieMarketing">
+            <span>Marketing</span>
+        </label>
+    </div>
+
+    <div class="flex justify-end gap-2">
+        <button id="rejectCookies"
+                class="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 text-sm">
+            {% if LANGUAGE_CODE == 'de' %} Ablehnen {% else %} Reject {% endif %}
+        </button>
+
+        <button id="acceptCookies"
+                class="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700 text-sm">
+            {% if LANGUAGE_CODE == 'de' %} Speichern {% else %} Save {% endif %}
+        </button>
+    </div>
+</div>
+
+<script>
+if (!localStorage.getItem("cookie_settings")) {
+    document.getElementById("cookieBanner").classList.remove("hidden");
+}
+
+document.getElementById("acceptCookies").onclick = () => {
+    const data = {
+        necessary: true,
+        stats: document.getElementById("cookieStats").checked,
+        marketing: document.getElementById("cookieMarketing").checked
+    };
+    localStorage.setItem("cookie_settings", JSON.stringify(data));
+    document.getElementById("cookieBanner").remove();
+};
+
+document.getElementById("rejectCookies").onclick = () => {
+    const data = { necessary: true, stats: false, marketing: false };
+    localStorage.setItem("cookie_settings", JSON.stringify(data));
+    document.getElementById("cookieBanner").remove();
+};
+</script>
+
+<!-- MAIN CONTENT -->
+<main class="flex-grow container mx-auto px-4 py-8">
+    {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-gray-900 dark:bg-black text-gray-300 text-center py-4 text-sm mt-10">
+  &copy; {{ now|date:"Y" }} SportMaster — All Rights Reserved.
+</footer>
+
+</body>
+</html>

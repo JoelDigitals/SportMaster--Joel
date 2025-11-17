@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Verbände</h1>
+
+<a class="btn btn-success mb-3" href="{% url 'federation_create' %}">➕ Verband erstellen</a>
+
+<ul class="list-group">
+    {% for f in federations %}
+        <li class="list-group-item">
+            <a href="{% url 'federation_detail' f.slug %}">{{ f.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Mitglieder — {{ team.name }}{% endblock %}
+{% block content %}
+<div class="card">
+  <h1 class="text-xl font-bold">Mitglieder — {{ team.name }}</h1>
+
+  
+  {% if user == team.cashier %}
+    <a href="{% url 'penalty_assign' team.slug %}" class="text-sm px-2 py-1 border rounded">Strafe zuweisen</a>
+  {% endif %}
+
+  <table class="w-full mt-4 table-auto">
+    <thead>
+      <tr class="text-left muted">
+        <th>Benutzer</th><th>Rolle</th><th>Kontakt</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in team.players.all %}
+        <tr class="border-t">
+          <td>{{ p.get_full_name|default:p.username }}</td>
+          <td>{{ p.role }}</td>
+          <td>{{ p.email }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

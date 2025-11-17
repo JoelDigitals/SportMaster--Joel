@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ federation.name }}</h1>
+
+<p><strong>Dachverband:</strong> {{ federation.head_federation }}</p>
+<p><strong>Parent:</strong> {{ federation.parent }}</p>
+<p><strong>Land:</strong> {{ federation.country }}</p>
+<p><strong>Email:</strong> {{ federation.contact_email }}</p>
+<p><strong>Adresse:</strong> {{ federation.adress }}</p>
+<p><strong>Telefon:</strong> {{ federation.phone_number }}</p>
+<p><strong>Website:</strong> <a href="{{ federation.website }}" target="_blank">{{ federation.website }}</a></p>
+<p><strong>Weitere Infos:</strong> {{ federation.additional_info }}</p>
+
+<a class="btn btn-primary" href="{% url 'federation_edit' federation.slug %}">✏️ Bearbeiten</a>
+<a class="btn btn-secondary" href="{% url 'federation_list' %}">⬅️ Zurück</a>
+{% endblock %}

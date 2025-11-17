@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — Trainingsserie{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+  <h1 class="text-xl font-semibold mb-4">{{ title }}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="space-y-4">
+      {% for field in form %}
+        <div>
+          <label class="block text-sm font-medium mb-1">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<p class="text-xs text-gray-500">{{ field.help_text }}</p>{% endif %}
+          {% if field.errors %}<p class="text-red-600 text-sm">{{ field.errors|striptags }}</p>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-4">
+      <button class="bg-indigo-600 text-white px-4 py-2 rounded">Erstellen</button>
+      <a href="{% url 'team_detail_trainer' team.slug %}" class="ml-2 px-4 py-2 border rounded">Abbrechen</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

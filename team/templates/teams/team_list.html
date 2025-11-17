@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Teams — SportMaster{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto mt-6 px-4">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Teams</h1>
+    </div>
+
+    <!-- Team Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for team in teams %}
+
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
+                        rounded-lg shadow hover:shadow-lg transition p-5 flex flex-col justify-between">
+
+                <!-- Team Name -->
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                    <a href="{% url 'team_public' team.slug %}" 
+                       class="hover:underline text-blue-600 dark:text-blue-400">
+                        {{ team.name }}
+                    </a>
+                </h2>
+
+                <!-- Club + Age Group -->
+                <p class="text-gray-600 dark:text-gray-300 text-sm">
+                    {{ team.club.name }} · {{ team.age_group }}
+                </p>
+
+                <!-- Buttons -->
+                <div class="mt-4 flex flex-wrap gap-2">
+
+                    <a href="{% url 'team_public' team.slug %}"
+                       class="px-3 py-1 text-sm rounded-lg border border-gray-300 dark:border-gray-600
+                              text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                        Öffentlich
+                    </a>
+
+                    <a href="{% url 'team_detail_members' team.slug %}"
+                       class="px-3 py-1 text-sm rounded-lg border border-gray-300 dark:border-gray-600
+                              text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+                        Mitglieder
+                    </a>
+                </div>
+            </div>
+
+        {% empty %}
+            <p class="text-gray-600 dark:text-gray-400">Keine Teams vorhanden.</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

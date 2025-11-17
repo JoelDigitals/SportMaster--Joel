@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Dachverbände</h1>
+
+<a class="btn btn-success mb-3" href="{% url 'head_create' %}">➕ Dachverband erstellen</a>
+
+<ul class="list-group">
+    {% for h in heads %}
+        <li class="list-group-item">
+            <a href="{% url 'head_detail' h.slug %}">{{ h.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

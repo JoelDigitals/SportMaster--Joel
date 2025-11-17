@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Suche | SportMaster{% endblock %}
+{% block content %}
+
+<div class="container mx-auto px-4 mt-6">
+
+    <h1 class="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100 text-center">Suche</h1>
+
+    <form method="GET" class="flex justify-center mb-6">
+        <input type="text" name="q" value="{{ query }}" placeholder="Suche Teams oder Vereine..."
+               class="w-full max-w-lg px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition" />
+    </form>
+
+    {% if query %}
+        <!-- Teams -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Teams</h2>
+            {% if teams %}
+                <ul class="space-y-2">
+                    {% for t in teams %}
+                        <li class="p-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow hover:shadow-lg transition">
+                            <a href="{% url 'team_public' t.slug %}" class="font-bold text-gray-900 dark:text-gray-100 hover:underline">
+                                {{ t.name }}
+                            </a> — 
+                            <a href="{% url 'club_detail' t.club.slug %}" class="text-gray-600 dark:text-gray-300 hover:underline">
+                                {{ t.club.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-600 dark:text-gray-400">Keine Teams gefunden.</p>
+            {% endif %}
+        </div>
+
+        <!-- Clubs -->
+        <div class="mb-6">
+            <h2 class="text-2xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Vereine</h2>
+            {% if clubs %}
+                <ul class="space-y-2">
+                    {% for c in clubs %}
+                        <li class="p-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow hover:shadow-lg transition">
+                            <a href="{% url 'club_detail' c.slug %}" class="text-gray-900 dark:text-gray-100 hover:underline">
+                                {{ c.name }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-600 dark:text-gray-400">Keine Vereine gefunden.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

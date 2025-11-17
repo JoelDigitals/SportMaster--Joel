@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ team.name }} — Öffentlich{% endblock %}
+
+{% block content %}
+
+<style>
+  /* FIX: Eingebundenes HTML immer hell anzeigen */
+  .light-embed * {
+    background: white !important;
+    color: #222 !important;
+  }
+  .light-embed table {
+    background: white !important;
+    color: #222 !important;
+  }
+  .light-embed td, 
+  .light-embed th {
+    border-color: #ccc !important;
+  }
+</style>
+
+<div class="grid md:grid-cols-3 gap-6">
+
+  <!-- Hauptbereich -->
+  <div class="md:col-span-2 card">
+
+    <!-- Kopf -->
+    <div class="flex justify-between items-start">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ team.name }}</h1>
+        <p class="muted">{{ team.club.name }} · {{ team.age_group }}</p>
+      </div>
+    </div>
+
+
+    <!-- EINBINDUNGEN / SPIELPLAN ---------------------------------- -->
+
+    {% if gameplan_html %}
+      <div class="mt-10">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">📅 Spielplan / Live</h3>
+
+        <!-- Immer heller Container -->
+        <div class="light-embed rounded-lg overflow-hidden border border-gray-300 p-2">
+          {{ gameplan_html|safe }}
+        </div>
+      </div>
+    {% endif %}
+
+
+    <!-- EINBINDUNGEN / TABELLE ---------------------------------- -->
+
+    {% if table_html %}
+      <div class="mt-10">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">📊 Tabelle</h3>
+
+        <!-- Immer heller Container -->
+        <div class="light-embed rounded-lg overflow-hidden border border-gray-300 p-2">
+          {{ table_html|safe }}
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+
+
+
+  <!-- Sidebar ----------------------------------------------------- -->
+  <aside class="card">
+    <h4 class="font-semibold text-gray-900 dark:text-gray-100">Kurzinfo</h4>
+
+    <p class="muted">Verein: <strong>{{ team.club.name }}</strong></p>
+
+    <p class="muted mt-3">Trainer:</p>
+    <ul class="mt-2">
+      {% for tr in team.trainers.all %}
+        <li class="text-sm">{{ tr.get_full_name|default:tr.username }}</li>
+      {% empty %}
+        <li class="muted">Keine Trainer</li>
+      {% endfor %}
+    </ul>
+
+    <div class="mt-4 space-y-2">
+      <a href="{% url 'members_list' team.slug %}" class="block text-center px-3 py-2 border rounded">
+        Alle Mitglieder
+      </a>
+    </div>
+  </aside>
+
+</div>
+{% endblock %}

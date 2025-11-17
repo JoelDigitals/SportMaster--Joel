@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}SportMaster | Startseite{% endblock %}
+
+{% block content %}
+<div class="w-full px-4 mt-6">
+
+    <!-- Welcome -->
+    <h1 class="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-gray-100 text-center">
+        Willkommen bei SportMaster
+    </h1>
+
+    <!-- Search -->
+    <div class="flex justify-center mb-6">
+        <form method="GET" action="{% url 'search' %}" class="w-full max-w-lg">
+            <input type="text" name="q" placeholder="Suche Teams oder Vereine..."
+                   class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition" />
+        </form>
+    </div>
+
+    <!-- Sports -->
+    <h2 class="text-2xl font-semibold mb-3 text-gray-800 dark:text-gray-200 text-center">Sportarten</h2>
+    <div class="flex flex-wrap justify-center gap-3 mb-6">
+        {% for sport in sports %}
+            <a href="{% url 'sports_overview' sport %}"
+               class="px-4 py-2 rounded-lg border border-blue-500 text-blue-500 dark:text-blue-400 dark:border-blue-400 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900 transition">
+               {{ sport.name }}
+            </a>
+        {% empty %}
+            <p class="text-gray-600 dark:text-gray-400">Keine Sportarten verfügbar.</p>
+        {% endfor %}
+    </div>
+
+    {% if user.is_authenticated %}
+        <!-- My Teams -->
+        <h2 class="text-2xl font-semibold mb-3 text-gray-800 dark:text-gray-200 text-center">Meine Teams</h2>
+        {% if my_teams %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-6">
+                {% for team in my_teams %}
+                    <a href="{% url 'team_detail_members' team.slug %}" 
+                       class="block border rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow hover:shadow-lg transition p-4 flex flex-col justify-between">
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">{{ team.name }}</h3>
+                        <p class="text-gray-600 dark:text-gray-300">{{ team.club.name }}</p>
+                        <span class="inline-block px-2 py-1 rounded-full text-sm font-semibold bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 mt-2">
+                            {{ team.sport }}
+                        </span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-600 dark:text-gray-400 mb-6 text-center">Du gehörst noch zu keinem Team.</p>
+        {% endif %}
+    {% endif %}
+
+    <!-- Latest Teams -->
+    <h2 class="text-2xl font-semibold mb-3 text-gray-800 dark:text-gray-200 text-center">Neueste Teams</h2>
+    {% if latest_teams %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for team in latest_teams %}
+                <a href="{% url 'team_public' team.slug %}" 
+                   class="block border rounded-lg bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 shadow hover:shadow-lg transition p-4 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-900 dark:text-gray-100 mb-1">{{ team.name }}</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-2">{{ team.club.name }}</p>
+                    </div>
+                    <span class="inline-block px-2 py-1 rounded-full text-sm font-semibold bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                        {{ team.sport }}
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-600 dark:text-gray-400 text-center">Keine Teams gefunden.</p>
+    {% endif %}
+
+</div>
+{% endblock %}
