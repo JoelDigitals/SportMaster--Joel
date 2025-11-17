@@ -1,142 +1,155 @@
 {% extends "base.html" %}
 {% block title %}{{ team.name }} — Mitglieder{% endblock %}
 {% block content %}
+
 <div class="grid md:grid-cols-3 gap-6">
-  <main class="md:col-span-2 card">
-    <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold">{{ team.name }}</h1>
-      <div class="muted text-sm">Verein: {{ team.club.name }}</div>
+
+  <!-- Hauptbereich -->
+  <main class="md:col-span-2 space-y-6">
+
+    <!-- Team Header -->
+    <div class="p-4 bg-white dark:bg-gray-800 rounded shadow flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ team.name }}</h1>
+      <div class="text-sm text-gray-600 dark:text-gray-300">Verein: 
+        <a href="{% url 'club_detail' team.club.slug %}" class="underline hover:text-blue-600 dark:hover:text-blue-400">{{ team.club.name }}</a>
+      </div>
     </div>
 
-    <!-- Aufstellungen: nur kommende Spiele anzeigen -->
-    <section class="mt-6">
-      <h2 class="font-semibold">Aufstellungen (kommende Spiele)</h2>
-      <div class="space-y-3 mt-3">
-        {% for l in lineups %}
-          {% if l.date %}
-            {% if l.date >= now %}
-              <div class="p-3 border rounded">
-                <div class="flex justify-between">
-                  <div>
-                    <strong>{{ l.name }}</strong>
-                    <div class="muted text-xs">{{ l.date }}</div>
-                  </div>
-                  <div>
-                    {% if l.is_public %}<span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-sm">Öffentlich</span>{% endif %}
-                    {% if user in team.trainers.all %}
-                      <a href="{% url 'lineup_edit' team.slug l.pk %}" class="text-blue-600 ml-2">Bearbeiten</a>
-                    {% endif %}
-                  </div>
-                </div>
-                <div class="mt-2 text-sm">
-                  Spieler:
-                  <ul class="list-disc ml-5">
-                    {% for p in l.players.all %}
-                      <li>{{ p.get_full_name|default:p.username }}</li>
-                    {% empty %}
-                      <li class="muted">Keine Spieler</li>
-                    {% endfor %}
-                  </ul>
-                </div>
+    <!-- Aufstellungen -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Aufstellungen (kommende Spiele)</h2>
+      {% for l in lineups %}
+        {% if l.date >= now %}
+          <div class="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow">
+            <div class="flex justify-between items-center">
+              <div>
+                <strong class="text-gray-900 dark:text-gray-100">{{ l.name }}</strong>
+                <div class="text-xs text-gray-500 dark:text-gray-400">{{ l.date|date:"d.m.Y H:i" }}</div>
               </div>
-            {% endif %}
-          {% endif %}
-        {% empty %}
-          <p class="muted">Keine Aufstellungen vorhanden.</p>
-        {% endfor %}
-      </div>
+              <div class="flex items-center space-x-2">
+                {% if l.is_public %}
+                  <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-sm">Öffentlich</span>
+                {% endif %}
+                {% if user in team.trainers.all %}
+                  <a href="{% url 'lineup_edit' team.slug l.pk %}" class="text-blue-600 hover:underline">Bearbeiten</a>
+                {% endif %}
+              </div>
+            </div>
+            <div class="mt-2 text-sm">
+              Spieler:
+              <ul class="list-disc ml-5">
+                {% for p in l.players.all %}
+                  <li>{{ p.get_full_name|default:p.username }}</li>
+                {% empty %}
+                  <li class="text-gray-500 dark:text-gray-400">Keine Spieler</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        {% endif %}
+      {% empty %}
+        <p class="text-gray-500 dark:text-gray-400">Keine Aufstellungen vorhanden.</p>
+      {% endfor %}
     </section>
 
-    <!-- Trainings: nur nächste 6 -->
-    <section class="mt-6">
-      <h2 class="font-semibold">Nächste Trainings</h2>
-      <ul class="mt-3 space-y-3">
+    <!-- Trainings -->
+    <section class="space-y-4">
+      <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">Nächste Trainings</h2>
+      <ul class="space-y-3">
         {% for t in trainings|slice:":6" %}
-          <li class="p-3 border rounded flex justify-between items-center">
-            <div>
-              <div class="font-medium">{{ t.start|date:"d.m.Y H:i" }} — {{ t.location }}</div>
-              {% if t.note %}<div class="muted text-sm">{{ t.note }}</div>{% endif %}
-              <div class="text-xs muted mt-1">
-                Zugesagt:
+          <li class="p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded shadow flex justify-between items-start">
+            <div class="flex-1">
+              <div class="font-medium text-gray-900 dark:text-gray-100">{{ t.start|date:"d.m.Y H:i" }} — {{ t.location }}</div>
+              {% if t.note %}
+                <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ t.note }}</div>
+              {% endif %}
+              <div class="mt-2 text-sm flex flex-wrap gap-1">
                 {% for r in t.rsvps.all %}
                   {% if r.status == 'yes' %}
-                    <span class="inline-block px-2 py-0.5 text-xs border rounded mr-1">{{ r.user.get_full_name|default:r.user.username }}</span>
+                    <span class="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs">{{ r.user.get_full_name|default:r.user.username }}</span>
+                  {% elif r.status == 'no' %}
+                    <span class="px-2 py-0.5 bg-red-100 text-red-800 rounded text-xs line-through">{{ r.user.get_full_name|default:r.user.username }}</span>
+                  {% elif r.status == 'maybe' %}
+                    <span class="px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded text-xs">{{ r.user.get_full_name|default:r.user.username }}</span>
                   {% endif %}
                 {% empty %}
-                  <span class="muted">Keine</span>
+                  <span class="text-gray-500 dark:text-gray-400 text-xs">Keine Zusagen</span>
                 {% endfor %}
               </div>
             </div>
 
             <!-- RSVP Buttons -->
-            <div class="flex gap-2">
+            <div class="flex flex-col gap-1 ml-4">
               <form method="post" action="{% url 'training_rsvp' team.slug t.pk %}">
                 {% csrf_token %}
                 <input type="hidden" name="status" value="yes" />
-                <button class="px-3 py-1 border rounded bg-green-600 text-white">✔️ Zusagen</button>
+                <button class="px-3 py-1 rounded bg-green-600 text-white hover:bg-green-700">✔️ Zusagen</button>
               </form>
 
               <form onsubmit="openDeclineModal(event, '{{ t.pk }}');" class="inline">
                 {% csrf_token %}
-                <button type="button" class="px-3 py-1 border rounded bg-red-600 text-white">❌ Absagen</button>
+                <button type="button" class="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700">❌ Absagen</button>
               </form>
 
               <form method="post" action="{% url 'training_rsvp' team.slug t.pk %}">
                 {% csrf_token %}
                 <input type="hidden" name="status" value="maybe" />
-                <button class="px-3 py-1 border rounded bg-yellow-600 text-white">Vielleicht</button>
+                <button class="px-3 py-1 rounded bg-yellow-600 text-white hover:bg-yellow-700">Vielleicht</button>
               </form>
             </div>
           </li>
         {% empty %}
-          <li class="muted">Keine anstehenden Trainings.</li>
+          <li class="text-gray-500 dark:text-gray-400">Keine anstehenden Trainings.</li>
         {% endfor %}
       </ul>
     </section>
 
-    <!-- Chat include -->
+    <!-- Chat Include -->
     <section class="mt-6">
       {% include "teams/chat_inc.html" %}
     </section>
   </main>
 
-  <aside class="card">
-    <h3 class="font-semibold">Kurzinfo & Aktionen</h3>
-    <p class="muted"><strong>Trainer:</strong></p>
-    <ul class="mt-2">
+  <!-- Sidebar -->
+  <aside class="space-y-4 p-4 bg-white dark:bg-gray-800 rounded shadow">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Kurzinfo & Aktionen</h3>
+
+    <p class="text-sm text-gray-600 dark:text-gray-400"><strong>Trainer:</strong></p>
+    <ul class="mt-1 space-y-1">
       {% for tr in team.trainers.all %}
-        <li class="text-sm">{{ tr.get_full_name|default:tr.username }}</li>
+        <li class="text-sm text-gray-900 dark:text-gray-100">{{ tr.get_full_name|default:tr.username }}</li>
       {% empty %}
-        <li class="muted">Keine Trainer</li>
+        <li class="text-gray-500 dark:text-gray-400">Keine Trainer</li>
       {% endfor %}
     </ul>
 
     <div class="mt-4 space-y-2">
       {% if user in team.trainers.all %}
-        <a href="{% url 'training_event_create' team.slug %}" class="block text-center px-3 py-2 border rounded bg-yellow-600 text-white">➕ Einzel-Training</a>
-        <a href="{% url 'training_series_create' team.slug %}" class="block text-center px-3 py-2 border rounded bg-indigo-600 text-white">➕ Trainingsserie</a>
-        <a href="{% url 'lineup_create' team.slug %}" class="block text-center px-3 py-2 border rounded bg-green-600 text-white">➕ Aufstellung</a>
+        <a href="{% url 'training_event_create' team.slug %}" class="block text-center px-3 py-2 rounded bg-yellow-600 text-white hover:bg-yellow-700">➕ Einzel-Training</a>
+        <a href="{% url 'training_series_create' team.slug %}" class="block text-center px-3 py-2 rounded bg-indigo-600 text-white hover:bg-indigo-700">➕ Trainingsserie</a>
+        <a href="{% url 'lineup_create' team.slug %}" class="block text-center px-3 py-2 rounded bg-green-600 text-white hover:bg-green-700">➕ Aufstellung</a>
       {% endif %}
-      <a href="{% url 'members_list' team.slug %}" class="block text-center px-3 py-2 border rounded">Alle Mitglieder</a>
-      <a href="{% url 'penalties_list' team.slug %}" class="block text-center px-3 py-2 border rounded">Strafenkatalog</a>
+      <a href="{% url 'members_list' team.slug %}" class="block text-center px-3 py-2 rounded border border-gray-300 dark:border-gray-600">Alle Mitglieder</a>
+      <a href="{% url 'penalties_list' team.slug %}" class="block text-center px-3 py-2 rounded border border-gray-300 dark:border-gray-600">Strafenkatalog</a>
     </div>
   </aside>
 </div>
 
 <script>
-  function openDeclineModal(evt, trainingId) {
-    evt.preventDefault();
-    const html = `
-      <h3 class="font-semibold">Absage-Grund</h3>
-      <form id="declineForm" method="post" action="{% url 'training_rsvp' team.slug 0 %}".replace('/0/','/' + trainingId + '/')>
-        {% csrf_token %}
-        <input type="hidden" name="status" value="no" />
-        <textarea name="comment" rows="4" class="w-full border rounded p-2" placeholder="Grund für Absage (optional)"></textarea>
-        <div class="mt-3 text-right">
-          <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded">Absagen</button>
-        </div>
-      </form>`;
-    openModal(html);
-  }
+function openDeclineModal(evt, trainingId) {
+  evt.preventDefault();
+  const html = `
+    <h3 class="font-semibold text-gray-900 dark:text-gray-100">Absage-Grund</h3>
+    <form id="declineForm" method="post" action="{% url 'training_rsvp' team.slug 0 %}".replace('/0/','/' + trainingId + '/')>
+      {% csrf_token %}
+      <input type="hidden" name="status" value="no" />
+      <textarea name="comment" rows="4" class="w-full border rounded p-2 dark:bg-gray-700 dark:text-gray-100" placeholder="Grund für Absage (optional)"></textarea>
+      <div class="mt-3 text-right">
+        <button type="submit" class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700">Absagen</button>
+      </div>
+    </form>`;
+  openModal(html);
+}
 </script>
+
 {% endblock %}
