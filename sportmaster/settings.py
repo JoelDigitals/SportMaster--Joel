@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-zw!hx=)*s*ijkvqad&tdc$i-is0&1+2wzi8l$9!f1=pb_9mk6=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['sportmaster-1vim.onrender.com', 'localhost']
 
 AUTH_USER_MODEL = "accounts.CustomUser"
 # Application definition
